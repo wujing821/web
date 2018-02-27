@@ -5,7 +5,7 @@
     <box gap="50px 10px">
       <icon type="success" is-msg></icon>
       <p>支付成功</p>
-      <div class="payInfo">您已成功支付合同费用<span class="payMoney">3000</span>元，我们将尽快为您配置开通电子发票服务，感谢您的使用</div>
+      <div class="payInfo">您已成功支付合同费用<span class="payMoney" v-text='amount'></span>分，我们将尽快为您配置开通电子发票服务，感谢您的使用</div>
       <p>服务电话：400-123-45678</p>
     </box>
   </div>
@@ -27,6 +27,7 @@ export default {
   },
   data () {
     return {
+      amount:this.$route.query.amount,
       list: [{
         label: '产品',
         value: '产品一'

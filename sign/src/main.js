@@ -3,9 +3,9 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-// import { AlertPlugin, ToastPlugin } from 'vux'
-
-// Vue.use(ToastPlugin)
+import { AjaxPlugin,ToastPlugin } from 'vux'
+Vue.use(AjaxPlugin)
+Vue.use(ToastPlugin, {position: 'middle'})
 
 Vue.config.productionTip = false
 

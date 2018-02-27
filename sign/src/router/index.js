@@ -9,11 +9,13 @@ import Agreement from '@/components/agreement'
 import SignDetail from '@/components/detail'
 import CompanySet from '@/components/companyset'
 import Managerset from '@/components/managerset'
+import Payment from '@/components/paymentMethod'
 
 Vue.use(Router)
 
 export default new Router({
   mode: 'history',
+  base:'/static/',
   routes: [
     {
       path: '/',
@@ -59,6 +61,11 @@ export default new Router({
       path: '/managerset',
       name: 'managerset',
       component: Managerset
+    },
+    {
+      path: '/payment',
+      name: 'payment',
+      component: Payment
     }
   ]
 })

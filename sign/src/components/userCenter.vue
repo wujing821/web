@@ -1,36 +1,38 @@
 <template>
   <div class="user">
-    <x-header>个人中心<router-link slot="right" to="/info" class="link">设置</router-link></x-header>
+    <x-header>个人中心</x-header>
     <div class="userContainer">
         <div class="userCont">
             <div class="userImg">
-                <img src="./../assets/logo.png" alt="">
+                <img src="./../assets/img.jpg" alt="">
             </div>
             <p>张三</p>
         </div>
     </div>
-    <card :header="{title: '签约情况'}">
+    <card :header="{title: '签约情况'}"  v-if="showItemInfo">
       <div slot="content" class="card-demo-flex card-demo-content01">
         <div class="vux-1px-r">
-          <span>11</span>
+          <span v-text='totalMonthCounts'></span>
           <br/>
           {{ '本月签约' }}
         </div>
         <div class="vux-1px-r">
-          <span>15</span>
+          <span v-text='totalCounts'></span>
           <br/>
           {{ '共签约' }}
         </div>
       </div>
     </card>
     <group title="签约列表">
-      <cell-box is-link link="/detail">签约单位1，签约产品：123</cell-box>
-      <cell-box is-link link="/detail">签约单位1，签约产品：123</cell-box>
-      <cell-box is-link link="/detail">签约单位1，签约产品：123</cell-box>
-      <cell-box is-link link="/detail">签约单位1，签约产品：123</cell-box>
+      <cell-box v-for="(item,index) in list" :key="index" is-link @click.native="showDetail(item.id)">签约单位<span v-text="item.name"></span>，签约产品：<span v-text="item.product_id"></span></cell-box>
+      <!-- <cell-box is-link @click.native="showDetail">签约单位1，签约产品：123</cell-box> -->
+      <!-- <cell-box is-link link="/detail">签约单位1，签约产品：123</cell-box> -->
+      <!-- <cell-box is-link link="/detail">签约单位1，签约产品：123</cell-box> -->
     </group>
+    
     <box gap="10px 10px">
-        <x-button type="primary" link="/info">设置</x-button>
+        <x-button type="primary"  @click.native="modify">设置</x-button>
+        <x-button type="primary"  @click.native="clear">测试</x-button>
     </box>
   </div>
 </template>
@@ -50,8 +52,82 @@ export default {
   },
   data () {
     return {
-      
+      //注册用户id
+      id:JSON.parse(window.localStorage.getItem('customId')?window.localStorage.getItem('customId'):window.localStorage.getItem('customManagerId')),
+      totalMonthCounts:'',
+      totalCounts:'',
+      baseUrl:'http://invoice.rongecloud.com/admin',
+      list:[],//签约列表
+      showItemInfo:false
     }
+  },
+  methods:{
+    //获取数据
+    getData(){
+      this.$http({
+        method:'get',
+        url:this.baseUrl+'/agreement/agreement/getAgreementList',
+        params:{'registerId': this.id}//假数据   
+                
+      }).then((data)=>{
+        console.log(data);
+        if(data.data.ret == 0){
+          this.totalMonthCounts = data.data.data.totalMonthCounts;
+          this.totalCounts = data.data.data.totalCounts;    
+          this.list = data.data.data.list; 
+          if(data.data.data.list.length){
+            if(data.data.data.list[0].channel == '1'){
+              this.showItemInfo = true;
+            }
+          }
+          
+        }
+      })
+    },
+    modify(){
+      //根据userInfo判断客户经理,企业用户还是新用户
+      let flag = true;
+      //遍历localstorage里的key值
+      for(var i=0;i<localStorage.length;i++){
+          if(localStorage.key(i) === 'customManagerId'){
+            if(localStorage.getItem('customManagerId') !== ''){
+              console.log('客户经理');
+              flag = false;
+              this.$router.push({path:'/managerset'});
+              
+            }
+          }else if(localStorage.key(i) === 'customId'){          
+            if(localStorage.getItem('customId') !== ''){
+              console.log('企业客户');
+              flag = false;
+              this.$router.push({path:'/companyset'});
+              
+            }
+          }        
+      }
+      //localstorage里没有用户id，证明是新用户
+      if(flag){
+        console.log('新用户，未注册');
+        this.$router.push({path:'/info'})
+      }
+    },
+    //跳转详情页面
+    showDetail(id){
+      //带参数查询
+      this.$router.push({path: '/detail', query: {id: id}});
+      
+    },
+    clear(){
+      // window.localStorage.clear();
+      if(window.localStorage.getItem('customId')){
+        localStorage.removeItem('customId');
+      }else if(window.localStorage.getItem('customManagerId')){
+        localStorage.removeItem('customManagerId');        
+      }
+    }
+  },
+  mounted(){
+    this.getData();
   }
 }
 </script>

@@ -1,8 +1,8 @@
 <template>
   <div class="agreement">
     <x-header>服务协议</x-header>
-    <div class="container">
-        <h2>一.关于签约说明</h2>
+    <div class="container" v-html='datalist'>
+        <!-- <h2>一.关于签约说明</h2>
         <h4>1.关于签约</h4>
         <p>签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约</p>
         <h2>二.关于签约说明</h2>
@@ -10,7 +10,8 @@
         <p>签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约</p>
         <h2>三.关于签约说明</h2>
         <h4>1.关于签约</h4>
-        <p>签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约</p>
+        <p>签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约签约</p> -->
+
     </div>
   </div>
 </template>
@@ -25,9 +26,24 @@ export default {
   },
   data () {
     return {
-      
+      datalist:'',
+      baseUrl:'http://invoice.rongecloud.com/admin'
     }
-  }
+  },
+  mounted(){
+        var that = this //更改this指向
+        this.$http({
+            method:"get",
+            url: this.baseUrl + "/serviceagreedoc/serviceagreedoc/agreeAjaxList",
+            params:{"type" : "01"},
+            
+        }).then((data)=>{
+            console.log(data)
+            if(data.data.ret === 0){
+                this.datalist = data.data.data[0].content
+            }
+        })
+    }
 }
 </script>
 
